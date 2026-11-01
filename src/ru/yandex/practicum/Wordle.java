@@ -1,5 +1,7 @@
 package ru.yandex.practicum;
 
+import java.util.Scanner;
+
 /*
 в главном классе нам нужно:
     создать лог-файл (он должен передаваться во все классы)
@@ -12,7 +14,13 @@ package ru.yandex.practicum;
 public class Wordle {
 
     public static void main(String[] args) {
+        WordleDictionary wordleDictionary = new WordleDictionary(WordleDictionaryLoader.loadToList());
+        WordleGame wordleGame = new WordleGame(wordleDictionary);
+        Scanner scanner = new Scanner(System.in);
 
+        while (wordleGame.getSteps() != 0){
+
+        }
     }
 
 }

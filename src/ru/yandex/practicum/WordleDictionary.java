@@ -12,7 +12,7 @@ import java.util.Random;
  */
 public class WordleDictionary {
 
-    private final int WORDLE_WORD_LENGTH = 5;
+    public final int WORDLE_WORD_LENGTH = 5;
 
     private List<String> words;
 
@@ -21,7 +21,7 @@ public class WordleDictionary {
     }
 
     private Random random = new Random();
-    public String getAnswer(){
+    public String getRandomWord() {
         return words.get(random.nextInt(words.size()));
     }
 
@@ -29,27 +29,41 @@ public class WordleDictionary {
         return words;
     }
 
-    public boolean checkUserWordInDict(String userWord){
+    public boolean checkUserWordInDict(String userWord) {
         return words.contains(StringNormalizer.normalizeString(userWord));
     }
 
     public boolean checkWordRules(String userWord){
-        return userWord.length() == 5;
+        return userWord.length() == WORDLE_WORD_LENGTH;
     }
 
-    public String getCharsClue(String answer, String userWord){
-        StringBuilder answerSB = new StringBuilder(answer);
+    public String getCharsClue(String answer, String userWord) {
         StringBuilder userWordSB = new StringBuilder(userWord);
         StringBuilder clue = new StringBuilder(new String("-----"));
         Map<Character, Integer> charCounter = fillCharMap(answer);
 
+        clue = setPlusForCorrectCharInOwnPlace(answer, userWordSB, clue, charCounter);
+        clue = setCaretForCharThatHasInAnswerButNotOwnPlace(answer, userWordSB, clue, charCounter);
+
+        return clue.toString();
+    }
+
+    private StringBuilder setPlusForCorrectCharInOwnPlace(String answer, StringBuilder userWordSB, StringBuilder clue,
+                                               Map<Character, Integer> charCounter){
         for (int i = 0; i < WORDLE_WORD_LENGTH; i++) {
             char target = userWordSB.charAt(i);
             if (answer.charAt(i) == target) {
                 clue.setCharAt(i, '+');
                 charCounter.replace(target, charCounter.get(target) - 1);
             }
-        } // то что выше в отдельный метод упаковать
+        }
+
+        return clue;
+    }
+
+    private StringBuilder setCaretForCharThatHasInAnswerButNotOwnPlace(
+            String answer, StringBuilder userWordSB, StringBuilder clue,
+            Map<Character, Integer> charCounter){
 
         for (int i = 0; i < WORDLE_WORD_LENGTH; i++) {
             char target = userWordSB.charAt(i);
@@ -63,12 +77,11 @@ public class WordleDictionary {
                 }
             }
 
-        } // также в отдельный метод можно швырять
-
-        return null;
+        }
+        return clue;
     }
 
-    public Map<Character, Integer> fillCharMap(String answer){
+    private Map<Character, Integer> fillCharMap(String answer){
         Map<Character, Integer> charCounter = new HashMap<>();
         for (Character ch : answer.toCharArray()) {
             if (charCounter.containsKey(ch)){
