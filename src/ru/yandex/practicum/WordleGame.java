@@ -34,7 +34,7 @@ public class WordleGame {
         clueKeeper = new ClueKeeper();
     }
 
-    private void fillClueKeeper(String userWord) {
+    public void fillClueKeeper(String userWord) {
         String charClue = dictionary.getCharsClue(answer, userWord);
 
         Map<Character, Integer> confirmedCounts = new HashMap<>();
@@ -100,7 +100,7 @@ public class WordleGame {
         }
     }
 
-    private List<String> updateAvailableWords(){
+    public void updateAvailableWords(){
         List<String> words = new ArrayList<>(availableWords);
         for (char ch : clueKeeper.getRequiredCharCounts().keySet()) {
             int valueOfChar = clueKeeper.getRequiredCharCounts().get(ch);
@@ -131,8 +131,7 @@ public class WordleGame {
                     words.removeIf(word -> word.charAt(index) != ch);
                 }
             }
-
-        return words;
+        availableWords = words;
     }
 
     private int getTotalChar(String word, char target) {
@@ -144,30 +143,19 @@ public class WordleGame {
         return count;
     }
 
-    private String getWordFromAvailable() {
+    public String getWordFromAvailable() {
         return availableWords.get(rand.nextInt(availableWords.size()));
-    }
-
-    public void startGame() throws EnglishWordException {
-        Scanner scanner = new Scanner(System.in);
-        while (steps != 0){
-            String userWord = scanner.nextLine();
-
-
-            if (userWord.isBlank()) {
-                userWord = getWordFromAvailable();
-                System.out.println(userWord);
-            }
-
-            fillClueKeeper(userWord);
-            String clue = dictionary.getCharsClue(answer, userWord);
-            System.out.println(clue);
-            availableWords = updateAvailableWords();
-            steps--;
-        }
     }
 
     public int getSteps() {
         return steps;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void nextStep(){
+        steps--;
     }
 }

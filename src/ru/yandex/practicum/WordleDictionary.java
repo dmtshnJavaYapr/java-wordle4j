@@ -29,12 +29,20 @@ public class WordleDictionary {
         return words;
     }
 
-    public boolean checkUserWordInDict(String userWord) {
-        return words.contains(StringNormalizer.normalizeString(userWord));
+    public void checkUserWordInDict(String userWord) {
+        if (!words.contains(StringNormalizer.normalizeString(userWord)))
+            throw new WordIsNotFoundInDict("Такого слова в словаре не существует");
+
     }
 
-    public boolean checkWordRules(String userWord){
-        return userWord.length() == WORDLE_WORD_LENGTH;
+    public void checkWordRules(String userWord) throws WordsLengthIsNotFive {
+        if (userWord.length() != 5)
+            throw new WordsLengthIsNotFive("Некорректная длина слова");
+    }
+
+    public void checkIsWordNotRussian(String userWord) throws EnglishWordException {
+        if (userWord.matches("^[a-zA-Z]+$"))
+            throw new EnglishWordException("Слово должно быть на русском языке");
     }
 
     public String getCharsClue(String answer, String userWord) {
