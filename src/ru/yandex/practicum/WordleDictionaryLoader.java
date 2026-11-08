@@ -9,7 +9,7 @@ public class WordleDictionaryLoader {
 
     private PrintWriter log;
 
-    public WordleDictionaryLoader(PrintWriter log){
+    public WordleDictionaryLoader(PrintWriter log) {
         this.log = log;
     }
 
@@ -19,7 +19,7 @@ public class WordleDictionaryLoader {
             log.println("Начинаем загрузку словаря");
             List<String> list = new ArrayList<>();
             String line;
-            while ((line = br.readLine()) != null){
+            while ((line = br.readLine()) != null ){
                 if (line.length() == 5) {
                     line = StringNormalizer.normalizeString(line);
                     list.add(line);
