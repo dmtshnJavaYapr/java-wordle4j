@@ -72,7 +72,5 @@ public class Wordle {
         } catch (FileNotFoundException e) {
             System.err.println("Не удалось создать лог-файл: " + e.getMessage());
         }
-
-
     }
 }
