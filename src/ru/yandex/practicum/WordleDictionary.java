@@ -13,7 +13,7 @@ import java.util.Random;
  */
 public class WordleDictionary {
 
-    public final int WORDLE_WORD_LENGTH = 5;
+    public static final int WORDLE_WORD_LENGTH = 5;
 
     private List<String> words;
     private PrintWriter log;
@@ -84,7 +84,7 @@ public class WordleDictionary {
                 continue;
 
             if (answer.contains(String.valueOf(target))) {
-                if (charCounter.get(target) > 0){
+                if (charCounter.get(target) > 0) {
                     clue.setCharAt(i, '^');
                     charCounter.replace(target, charCounter.get(target) - 1);
                 }
@@ -98,12 +98,10 @@ public class WordleDictionary {
         Map<Character, Integer> charCounter = new HashMap<>();
         for (Character ch : answer.toCharArray()) {
 
-            if (charCounter.containsKey(ch)){
+            if (charCounter.containsKey(ch)) {
                 int charValue = charCounter.get(ch);
                 charCounter.replace(ch, charValue + 1);
-            }
-
-            else
+            } else
                 charCounter.put(ch, 1);
 
         }
