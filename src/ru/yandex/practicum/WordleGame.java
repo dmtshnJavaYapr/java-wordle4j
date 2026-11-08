@@ -1,5 +1,6 @@
 package ru.yandex.practicum;
 
+import java.io.PrintWriter;
 import java.util.*;
 
 import static java.awt.SystemColor.text;
@@ -22,115 +23,97 @@ public class WordleGame {
     private int steps = 6;
     private WordleDictionary dictionary;
     private ClueKeeper clueKeeper;
+    private PrintWriter log;
 
     private List<String> userWords = new ArrayList<>();
     private List<String> availableWords;
     Random rand = new Random();
 
-    public WordleGame(WordleDictionary wordleDictionary) {
+    public WordleGame(WordleDictionary wordleDictionary, PrintWriter log) {
         this.dictionary = wordleDictionary;
         answer = dictionary.getRandomWord();
         availableWords = new ArrayList<>(dictionary.getWords());
         clueKeeper = new ClueKeeper();
+        this.log = log;
     }
 
-    public void fillClueKeeper(String userWord) {
-        String charClue = dictionary.getCharsClue(answer, userWord);
-
-        Map<Character, Integer> confirmedCounts = new HashMap<>();
-        Set<Character> hasUnconfirmed = new HashSet<>();
+    public void fillClueKeeper(String userWord){
+        String clue = dictionary.getCharsClue(answer, userWord);
+        Map<Character, Integer> requiredCharCounts = clueKeeper.getRequiredCharCounts();
+        Set<Character> bannedChars = clueKeeper.getBannedChars();
+        Set<Character> charWithCaret = new HashSet<>();
+        Set<Character> doNotBan = new HashSet<>();
 
         for (int i = 0; i < dictionary.WORDLE_WORD_LENGTH; i++) {
             char currentChar = userWord.charAt(i);
-            char currentClue = charClue.charAt(i);
+            char clueChar = clue.charAt(i);
+            if (clueChar == '+') {
+                Map<Character, Set<Integer>> correctCharPosition = clueKeeper.getCorrectCharPosition();
+                if (correctCharPosition.containsKey(currentChar))
+                    correctCharPosition.get(currentChar).add(i);
 
-            if (currentClue == '+' || currentClue == '^') {
-                if (confirmedCounts.containsKey(currentChar)) {
-                    int count = confirmedCounts.get(currentChar);
-                    confirmedCounts.put(currentChar, count + 1);
-                } else {
-                    confirmedCounts.put(currentChar, 1);
+                else {
+                    Set<Integer> indexes = new HashSet<>(List.of(i));
+                    correctCharPosition.put(currentChar, indexes);
                 }
-            } else {
-                hasUnconfirmed.add(currentChar);
+                doNotBan.add(currentChar);
             }
-        }
 
-        for (Character ch : confirmedCounts.keySet()) {
-            int count = confirmedCounts.get(ch);
-
-            if (hasUnconfirmed.contains(ch)) {
-                clueKeeper.getRequiredCharCounts().put(ch, count);
-            } else {
-                if (clueKeeper.getRequiredCharCounts().containsKey(ch)) {
-                    int oldCount = clueKeeper.getRequiredCharCounts().get(ch);
-
-                    if (count > oldCount) {
-                        clueKeeper.getRequiredCharCounts().put(ch, count);
+            if (clueChar == '^') {
+                if (!charWithCaret.contains(currentChar)) {
+                    int count = 0;
+                    for (int j = 0; j < dictionary.WORDLE_WORD_LENGTH; j++) {
+                        if (currentChar == userWord.charAt(j) && (clue.charAt(j) == '^' || clue.charAt(j) == '+'))
+                            count++;
                     }
-                } else {
-                    clueKeeper.getRequiredCharCounts().put(ch, count);
+
+                    if (requiredCharCounts.containsKey(currentChar) &&
+                            requiredCharCounts.get(currentChar) < count) {
+                        requiredCharCounts.replace(currentChar, count);
+                    }
+
+                    if (!requiredCharCounts.containsKey(currentChar))
+                        requiredCharCounts.put(currentChar, count);
                 }
+
+                charWithCaret.add(currentChar);
+                doNotBan.add(currentChar);
             }
         }
-
-        for (Character ch : hasUnconfirmed) {
-            if (!confirmedCounts.containsKey(ch)) {
-                clueKeeper.getRequiredCharCounts().put(ch, 0);
-            }
-        }
-
-        for (int i = 0; i < dictionary.WORDLE_WORD_LENGTH; i++) {
+        for (int i = 0; i < dictionary.WORDLE_WORD_LENGTH; i++){
             char currentChar = userWord.charAt(i);
-            char currentClue = charClue.charAt(i);
+            char clueChar = clue.charAt(i);
 
-            if (currentClue == '+') {
-                clueKeeper.getCorrectCharPosition().put(currentChar, i);
-            }
-
-            if (currentClue == '^') {
-                if (clueKeeper.getIncorrectCharPositions().containsKey(currentChar)) {
-                    clueKeeper.getIncorrectCharPositions().get(currentChar).add(i);
-                } else {
-                    Set<Integer> positions = new HashSet<>();
-                    positions.add(i);
-                    clueKeeper.getIncorrectCharPositions().put(currentChar, positions);
-                }
+            if (clueChar == '-' && !doNotBan.contains(currentChar)){
+                bannedChars.add(currentChar);
             }
         }
+
     }
 
     public void updateAvailableWords(){
         List<String> words = new ArrayList<>(availableWords);
-        for (char ch : clueKeeper.getRequiredCharCounts().keySet()) {
-            int valueOfChar = clueKeeper.getRequiredCharCounts().get(ch);
+        Map<Character, Integer> requiredCharCounts = clueKeeper.getRequiredCharCounts();
+        Map<Character, Set<Integer>> correctCharPosition = clueKeeper.getCorrectCharPosition();
+        Set<Character> bannedChars = clueKeeper.getBannedChars();
 
-            if (clueKeeper.getRequiredCharCounts().get(ch) == 0) {
-                words.removeIf(word -> word.indexOf(ch) != -1);
-            }
+        // '-'
+        for (char ch : bannedChars) {
+            words.removeIf(word -> word.contains(Character.toString(ch)));
+        }
 
-            if (clueKeeper.getRequiredCharCounts().get(ch) > 0) {
-                words.removeIf(word -> getTotalChar(word, ch) != valueOfChar);
+        // +'
+        for (char ch : correctCharPosition.keySet()){
+            for (int index : correctCharPosition.get(ch)) {
+                words.removeIf(word -> word.charAt(index) != ch);
             }
         }
 
-        Map<Character, Set<Integer>> incorrectChars = clueKeeper.getIncorrectCharPositions();
-            if (!incorrectChars.isEmpty()){
-                for (char ch : incorrectChars.keySet()){
-                    Set<Integer> currentSet = incorrectChars.get(ch);
-                    for (int index : currentSet){
-                        words.removeIf(word -> word.indexOf(ch) == index);
-                    }
-                }
-            }
+        // '^'
+        for (char ch : requiredCharCounts.keySet()){
+                words.removeIf(word -> getTotalChar(word, ch) < requiredCharCounts.get(ch));
+        }
 
-        Map<Character, Integer> correctCharPosition = clueKeeper.getCorrectCharPosition();
-            if (!correctCharPosition.isEmpty()){
-                for (char ch : correctCharPosition.keySet()){
-                    int index = correctCharPosition.get(ch);
-                    words.removeIf(word -> word.charAt(index) != ch);
-                }
-            }
         availableWords = words;
     }
 
@@ -141,6 +124,10 @@ public class WordleGame {
                 count++;
         }
         return count;
+    }
+
+    private int getTotalCharWithCaret(String clue, String word){
+        return 0;
     }
 
     public String getWordFromAvailable() {
@@ -157,5 +144,13 @@ public class WordleGame {
 
     public void nextStep(){
         steps--;
+    }
+
+    public int getSizeAvailableWords(){
+        return availableWords.size();
+    }
+
+    public List<String> getAvailableWords(){
+        return availableWords;
     }
 }

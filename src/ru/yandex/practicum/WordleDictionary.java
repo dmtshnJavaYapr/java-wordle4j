@@ -1,5 +1,6 @@
 package ru.yandex.practicum;
 
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,11 @@ public class WordleDictionary {
     public final int WORDLE_WORD_LENGTH = 5;
 
     private List<String> words;
+    private PrintWriter log;
 
-    public WordleDictionary(List<String> words){
+    public WordleDictionary(List<String> words, PrintWriter log){
         this.words = words;
+        this.log = log;
     }
 
     private Random random = new Random();
@@ -52,6 +55,7 @@ public class WordleDictionary {
 
         clue = setPlusForCorrectCharInOwnPlace(answer, userWordSB, clue, charCounter);
         clue = setCaretForCharThatHasInAnswerButNotOwnPlace(answer, userWordSB, clue, charCounter);
+
 
         return clue.toString();
     }

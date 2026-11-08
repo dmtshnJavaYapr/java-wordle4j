@@ -1,18 +1,22 @@
 package ru.yandex.practicum;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WordleDictionaryLoader {
 
-    public static List<String> loadToList(){
-        try (BufferedReader br = new BufferedReader(new FileReader("words_ru.txt",
+    private PrintWriter log;
+
+    public WordleDictionaryLoader(PrintWriter log){
+        this.log = log;
+    }
+
+    public List<String> loadToList(String fileName) throws FileNotFoundException {
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName,
                 StandardCharsets.UTF_8))) {
+            log.println("Начинаем загрузку словаря");
             List<String> list = new ArrayList<>();
             String line;
             while ((line = br.readLine()) != null){
@@ -21,10 +25,10 @@ public class WordleDictionaryLoader {
                     list.add(line);
                 }
             }
+
+            log.println("Загрузили словарь");
             return list;
 
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Указанный файл не существует", e);
         } catch (IOException e) {
             throw new RuntimeException("Ошибка при чтении словаря", e);
         }

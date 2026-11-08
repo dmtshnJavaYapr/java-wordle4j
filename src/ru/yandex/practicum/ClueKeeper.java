@@ -4,10 +4,11 @@ import java.util.*;
 
 public class ClueKeeper {
     private Map<Character, Integer> requiredCharCounts = new HashMap<>();
-    private Map<Character, Integer> correctCharPosition = new HashMap<>();
+    private Map<Character, Set<Integer>> correctCharPosition = new HashMap<>();
     private Map<Character, Set<Integer>> incorrectCharPositions = new HashMap<>();
+    private Set<Character> bannedChars = new HashSet<>();
 
-    public Map<Character, Integer> getCorrectCharPosition() {
+    public Map<Character, Set<Integer>> getCorrectCharPosition() {
         return correctCharPosition;
     }
 
@@ -17,5 +18,9 @@ public class ClueKeeper {
 
     public Map<Character, Integer> getRequiredCharCounts() {
         return requiredCharCounts;
+    }
+
+    public Set<Character> getBannedChars() {
+        return bannedChars;
     }
 }
