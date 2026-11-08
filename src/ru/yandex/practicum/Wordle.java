@@ -59,7 +59,7 @@ public class Wordle {
                 }
                 System.out.println("Загаданное слово: " + wordleGame.getAnswer());
 
-            } catch (FileNotFoundException e){
+            } catch (FileNotFoundException e) {
                 log.println("Не нашли файл словаря!");
             } catch (Exception e) {
                 System.err.println("Случился некоторый пиздец, смотри лог");
