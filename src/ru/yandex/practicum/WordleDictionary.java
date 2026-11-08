@@ -18,12 +18,13 @@ public class WordleDictionary {
     private List<String> words;
     private PrintWriter log;
 
-    public WordleDictionary(List<String> words, PrintWriter log){
+    public WordleDictionary(List<String> words, PrintWriter log) {
         this.words = words;
         this.log = log;
     }
 
     private Random random = new Random();
+
     public String getRandomWord() {
         return words.get(random.nextInt(words.size()));
     }
@@ -61,7 +62,7 @@ public class WordleDictionary {
     }
 
     private StringBuilder setPlusForCorrectCharInOwnPlace(String answer, StringBuilder userWordSB, StringBuilder clue,
-                                               Map<Character, Integer> charCounter){
+                                               Map<Character, Integer> charCounter) {
         for (int i = 0; i < WORDLE_WORD_LENGTH; i++) {
             char target = userWordSB.charAt(i);
             if (answer.charAt(i) == target) {
@@ -75,14 +76,14 @@ public class WordleDictionary {
 
     private StringBuilder setCaretForCharThatHasInAnswerButNotOwnPlace(
             String answer, StringBuilder userWordSB, StringBuilder clue,
-            Map<Character, Integer> charCounter){
+            Map<Character, Integer> charCounter) {
 
         for (int i = 0; i < WORDLE_WORD_LENGTH; i++) {
             char target = userWordSB.charAt(i);
             if (clue.charAt(i) == '+')
                 continue;
 
-            if (answer.contains(String.valueOf(target))){
+            if (answer.contains(String.valueOf(target))) {
                 if (charCounter.get(target) > 0){
                     clue.setCharAt(i, '^');
                     charCounter.replace(target, charCounter.get(target) - 1);
@@ -93,9 +94,10 @@ public class WordleDictionary {
         return clue;
     }
 
-    private Map<Character, Integer> fillCharMap(String answer){
+    private Map<Character, Integer> fillCharMap(String answer) {
         Map<Character, Integer> charCounter = new HashMap<>();
         for (Character ch : answer.toCharArray()) {
+
             if (charCounter.containsKey(ch)){
                 int charValue = charCounter.get(ch);
                 charCounter.replace(ch, charValue + 1);
