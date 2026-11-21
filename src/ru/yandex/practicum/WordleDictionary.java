@@ -33,7 +33,7 @@ public class WordleDictionary {
         return words;
     }
 
-    public void checkUserWordInDict(String userWord) {
+    public void checkUserWordInDict(String userWord) throws WordIsNotFoundInDict {
         if (!words.contains(StringNormalizer.normalizeString(userWord)))
             throw new WordIsNotFoundInDict("Такого слова в словаре не существует");
 

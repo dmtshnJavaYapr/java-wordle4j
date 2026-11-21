@@ -1,6 +1,6 @@
 package ru.yandex.practicum;
 
-public class EnglishWordException extends RuntimeException {
+public class EnglishWordException extends Exception {
     public EnglishWordException(String message) {
         super(message);
     }

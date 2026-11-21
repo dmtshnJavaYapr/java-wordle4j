@@ -5,8 +5,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Wordle {
-    public static void main(String[] args) throws FileNotFoundException, EnglishWordException, WordIsNotFoundInDict,
-            WordsLengthIsNotFive {
+    public static void main(String[] args) {
 
         try (PrintWriter log = new PrintWriter("wordle.log")) {
 
@@ -33,6 +32,10 @@ public class Wordle {
                         wordleDictionary.checkIsWordNotRussian(userWord);
                         wordleDictionary.checkUserWordInDict(userWord);
                         wordleDictionary.checkWordRules(userWord);
+
+                        // Знакомый работает в 2ГИС QA инженером. Конкретно у него в работе
+                        // такие вещи через були отрабатывают, а не try catch
+                        // А в Java также или такой код через try тоже годится?
                     } catch (EnglishWordException |
                              WordIsNotFoundInDict |
                              WordsLengthIsNotFive e) {
