@@ -37,7 +37,7 @@ public class WordleGame {
         this.log = log;
     }
 
-    public void fillClueKeeper(String userWord){
+    public void fillClueKeeper(String userWord) {
         String clue = dictionary.getCharsClue(answer, userWord);
         Map<Character, Integer> requiredCharCounts = clueKeeper.getRequiredCharCounts();
         Set<Character> bannedChars = clueKeeper.getBannedChars();
@@ -80,18 +80,18 @@ public class WordleGame {
                 doNotBan.add(currentChar);
             }
         }
-        for (int i = 0; i < dictionary.WORDLE_WORD_LENGTH; i++){
+        for (int i = 0; i < dictionary.WORDLE_WORD_LENGTH; i++) {
             char currentChar = userWord.charAt(i);
             char clueChar = clue.charAt(i);
 
-            if (clueChar == '-' && !doNotBan.contains(currentChar)){
+            if (clueChar == '-' && !doNotBan.contains(currentChar)) {
                 bannedChars.add(currentChar);
             }
         }
 
     }
 
-    public void updateAvailableWords(){
+    public void updateAvailableWords() {
         List<String> words = new ArrayList<>(availableWords);
         Map<Character, Integer> requiredCharCounts = clueKeeper.getRequiredCharCounts();
         Map<Character, Set<Integer>> correctCharPosition = clueKeeper.getCorrectCharPosition();
@@ -103,14 +103,14 @@ public class WordleGame {
         }
 
         // +'
-        for (char ch : correctCharPosition.keySet()){
+        for (char ch : correctCharPosition.keySet()) {
             for (int index : correctCharPosition.get(ch)) {
                 words.removeIf(word -> word.charAt(index) != ch);
             }
         }
 
         // '^'
-        for (char ch : requiredCharCounts.keySet()){
+        for (char ch : requiredCharCounts.keySet()) {
                 words.removeIf(word -> getTotalChar(word, ch) < requiredCharCounts.get(ch));
         }
 
@@ -119,16 +119,13 @@ public class WordleGame {
 
     private int getTotalChar(String word, char target) {
         int count = 0;
-        for (char ch : word.toCharArray()){
+        for (char ch : word.toCharArray()) {
             if (ch == target)
                 count++;
         }
         return count;
     }
 
-    private int getTotalCharWithCaret(String clue, String word){
-        return 0;
-    }
 
     public String getWordFromAvailable() {
         return availableWords.get(rand.nextInt(availableWords.size()));
@@ -142,15 +139,15 @@ public class WordleGame {
         return answer;
     }
 
-    public void nextStep(){
+    public void nextStep() {
         steps--;
     }
 
-    public int getSizeAvailableWords(){
+    public int getSizeAvailableWords() {
         return availableWords.size();
     }
 
-    public List<String> getAvailableWords(){
+    public List<String> getAvailableWords() {
         return availableWords;
     }
 }
